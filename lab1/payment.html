@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Payment - PowerBill</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --bg-body: #f3f4f6;
+            --surface: #ffffff;
+            --text-heading: #111827;
+            --text-body: #374151;
+            --success: #10b981;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-body);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: var(--text-body);
+        }
+
+        .payment-card {
+            background: var(--surface);
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo {
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .subtitle {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 2rem;
+        }
+
+        .amount-container {
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        .currency-symbol {
+            position: absolute;
+            left: 20%;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            color: var(--text-heading);
+            font-weight: 600;
+        }
+
+        input#payAmount {
+            width: 100%;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            border: none;
+            border-bottom: 2px solid #e5e7eb;
+            text-align: center;
+            padding: 0.5rem 0;
+            transition: border-color 0.2s;
+        }
+
+        input#payAmount:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .details-grid {
+            background-color: #f9fafb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .detail-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .label {
+            color: #6b7280;
+        }
+
+        .val {
+            font-weight: 600;
+            color: var(--text-heading);
+        }
+
+        .card-preview {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-number {
+            font-family: monospace;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            letter-spacing: 2px;
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem;
+            width: 100%;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+        }
+
+        button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .secure-badge {
+            margin-top: 1.5rem;
+            font-size: 0.75rem;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .cancel-link {
+            display: block;
+            margin-top: 1rem;
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .cancel-link:hover {
+            color: var(--text-heading);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="payment-card">
+        <span class="logo">Secure Pay</span>
+        <div class="subtitle">Secure checkout</div>
+
+        <div class="amount-container">
+            <span style="font-size: 1.5rem; vertical-align: middle; color: #374151;">₹</span>
+            <input type="number" id="payAmount" value="0">
+        </div>
+
+        <div class="details-grid">
+            <div class="detail-row">
+                <span class="label">Total Due</span>
+                <span class="val" id="totalDues">₹0.00</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">Transaction ID</span>
+                <span class="val" id="tid">...</span>
+            </div>
+        </div>
+
+        <div style="text-align: left; margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; color: #374151; font-weight: 500;">Enter UPI ID</label>
+            <input type="text" id="upiId" placeholder="username@upi"
+                style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; box-sizing: border-box;">
+        </div>
+
+        <button onclick="processPayment()" id="payBtn">Pay Now</button>
+
+        <div class="secure-badge">
+            🔒 256-bit SSL Encrypted Payment
+        </div>
+
+        <a href="javascript:history.back()" class="cancel-link">Cancel Payment</a>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('username');
+        const amount = urlParams.get('amount');
+
+        if (amount) {
+            document.getElementById('totalDues').innerText = '₹' + amount;
+            document.getElementById('payAmount').value = amount;
+        } else {
+            document.getElementById('totalDues').innerText = '₹0';
+            document.getElementById('payAmount').value = 0;
+        }
+
+        document.getElementById('tid').innerText = 'TXN_' + Math.floor(Math.random() * 1000000000);
+
+        async function processPayment() {
+            const btn = document.getElementById('payBtn');
+            const payAmount = document.getElementById('payAmount').value;
+
+            if (!payAmount || payAmount <= 0) {
+                alert("Please enter a valid amount");
+                return;
+            }
+
+            btn.innerText = "Processing...";
+            btn.disabled = true;
+
+            // Simulate network delay
+            await new Promise(r => setTimeout(r, 1500));
+
+            try {
+                const response = await fetch("/pay-bill", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username: username, amount_paid: Number(payAmount) })
+                });
+
+                const result = await response.json();
+                if (result.status === "success") {
+                    btn.innerText = "Success!";
+                    btn.style.backgroundColor = "var(--success)";
+                    setTimeout(() => {
+                        window.location.href = "/user?status=paid";
+                    }, 1000);
+                } else {
+                    alert("Payment Failed: " + result.message);
+                    btn.innerText = "Pay Now";
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                alert("Error connecting to server");
+                btn.innerText = "Pay Now";
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+
+</html>

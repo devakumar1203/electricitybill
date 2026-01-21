@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Electricity Billing System</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --bg-color: #f3f4f6;
+            --surface-color: #ffffff;
+            --text-color: #1f2937;
+            --text-light: #6b7280;
+            --error-color: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f3f4f6 100%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .login-card {
+            background: var(--surface-color);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .login-card:hover {
+            transform: translateY(-5px);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        h3 {
+            color: var(--text-light);
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.25rem;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: all 0.2s;
+            background-color: #f9fafb;
+        }
+
+        input:focus {
+            border-color: var(--primary-color);
+            background-color: #fff;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 0.5rem;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .global-error {
+            background-color: #fef2f2;
+            color: var(--error-color);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+            display: none;
+            border: 1px solid #fee2e2;
+        }
+
+        .admin-hint {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 2rem;
+            opacity: 0.7;
+        }
+
+        /* Branding decorative element */
+        .brand-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-card">
+        <div class="brand-icon">⚡</div>
+        <h1>PowerBill</h1>
+        <h3>Access your dashboard</h3>
+
+        <div id="login-error" class="global-error"></div>
+
+        <form onsubmit="handleLogin(event)">
+            <div class="input-group">
+                <input type="text" name="user" id="user" placeholder="Username" required autocomplete="username">
+            </div>
+
+            <div class="input-group">
+                <input type="password" name="passwd" id="passwd" placeholder="Password" required
+                    autocomplete="current-password">
+            </div>
+
+            <button type="submit" id="loginBtn">Sign In</button>
+        </form>
+
+        <p class="admin-hint">
+            Authorized Personnel Only
+        </p>
+    </div>
+
+    <script>
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            const user = document.getElementById("user").value;
+            const pass = document.getElementById("passwd").value;
+            const errorEl = document.getElementById("login-error");
+            const btn = document.getElementById("loginBtn");
+
+            errorEl.style.display = 'none';
+            btn.disabled = true;
+            btn.innerText = "Authenticating...";
+
+            try {
+                let response = await fetch("/login", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user: user, passwd: pass })
+                })
+
+                if (response.ok) {
+                    let data = await response.json()
+
+                    if (data.status === "success") {
+                        localStorage.setItem('myUsername', data.username);
+                        window.location.href = data.redirect;
+                    } else {
+                        throw new Error("Invalid credentials");
+                    }
+                } else {
+                    throw new Error("Login failed");
+                }
+            } catch (err) {
+                errorEl.innerText = "Invalid username or password";
+                errorEl.style.display = 'block';
+                btn.innerText = "Sign In";
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+
+</html>

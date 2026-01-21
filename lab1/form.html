@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Electricity Billing System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Register</h1>
+        <div id="global-error" class="global-error"></div>
+
+        <form id="registerForm" onsubmit="handleRegister(event)">
+            <div>
+                <input type="text" name="username" id="username" placeholder="Username" required>
+                <div id="username-error" class="error-message"></div>
+            </div>
+
+            <div>
+                <input type="password" name="password" id="password" placeholder="Password" required>
+                <div id="password-error" class="error-message"></div>
+                <div style="font-size: 12px; color: #666; text-align: left; margin-bottom: 5px;">
+                    Min 8 chars, 1 uppercase, 1 lowercase, 1 digit, 1 special char
+                </div>
+            </div>
+
+            <div>
+                <input type="text" name="name" id="name" placeholder="Full Name" required>
+            </div>
+
+            <div>
+                <input type="text" name="mobileno" id="mobileno" placeholder="Mobile Number" required
+                    pattern="[0-9]{10}">
+                <div id="mobile-error" class="error-message"></div>
+            </div>
+
+            <div>
+                <input type="text" name="address" id="address" placeholder="Address" required>
+            </div>
+
+            <div>
+                <input type="text" name="meterno" id="meterno" placeholder="Meter Number" required>
+            </div>
+
+            <div>
+                <select name="meter_type" id="meter_type">
+                    <option value="household" selected>Household</option>
+                    <option value="commercial">Commercial</option>
+                    <option value="industrial">Industrial</option>
+                </select>
+            </div>
+
+            <button type="submit" id="submitBtn">Register</button>
+            <a href="/">Already have an account? Login here</a>
+        </form>
+    </div>
+
+    <script>
+        async function handleRegister(event) {
+            event.preventDefault();
+
+            // Clear previous errors
+            document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+            document.getElementById('global-error').style.display = 'none';
+            const btn = document.getElementById('submitBtn');
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const name = document.getElementById('name').value;
+            const mobileno = document.getElementById('mobileno').value;
+            const meterno = document.getElementById('meterno').value;
+            const address = document.getElementById('address').value;
+            const meter_type = document.getElementById('meter_type').value;
+
+            // Password Validation
+            const pwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            if (!pwdRegex.test(password)) {
+                showError('password-error', "Password must be at least 8 characters and include uppercase, lowercase, number, and special character.");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "Registering...";
+
+            try {
+                const response = await fetch("/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        username, password, name, mobileno, meterno, address, meter_type
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Success
+                    window.location.href = "/"; // Redirect to login
+                } else {
+                    // Show error
+                    if (data.message.includes("Username")) {
+                        showError('username-error', data.message);
+                    } else {
+                        document.getElementById('global-error').innerText = data.message;
+                        document.getElementById('global-error').style.display = 'block';
+                    }
+                }
+            } catch (err) {
+                document.getElementById('global-error').innerText = "Network error. Please try again.";
+                document.getElementById('global-error').style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Register";
+            }
+        }
+
+        function showError(elementId, message) {
+            const el = document.getElementById(elementId);
+            el.innerText = message;
+            el.style.display = 'block';
+        }
+    </script>
+</body>
+
+</html>
