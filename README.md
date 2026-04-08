@@ -9,7 +9,7 @@ Hey! This is a simple web app for managing electricity bills. It's built with No
 - **Consumer**: Can log in to check their bill and pay it online (via a secure checkout page).
 
 ## How to run it
-1. Make sure you have Node.js and MongoDB installed.
+1. Make sure you have Node.js and MongoDB installed on local.
 2. Install the dependencies:
    ```bash
    npm install
