@@ -10,7 +10,7 @@ Hey! This is a simple web app for managing electricity bills. It's built with No
 
 ## How to run it
 1. Make sure you have Node.js and MongoDB installed on local.
-2. Install the dependencies:
+2. Install the dependency:
    ```bash
    npm install
    ```
@@ -19,7 +19,6 @@ Hey! This is a simple web app for managing electricity bills. It's built with No
    node lab1.js
    ```
 4. Open your browser and go to: `http://localhost:3002`
-
 ## Default Login
 - **Admin**: user `admin`, password `admin`
 
